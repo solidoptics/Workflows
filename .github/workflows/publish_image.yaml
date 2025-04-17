@@ -6,11 +6,13 @@ on:
       dockerfile:
         required: true
         type: string
-        default: "./Dockerfile"
       tags:
         required: true
         type: string
-        default: ghcr.io/${{ github.repository }}:latest
+      image_name:
+        required: false
+        type: string
+        default: ${{ github.repository }}
 
 jobs:
 
@@ -33,6 +35,21 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.10.0
 
+      - name: Create image name list
+        run: |
+          IMAGE_NAMES=$(echo "${{ inputs.tags }}" | while IFS= read -r tag; do
+            if [[ -n "$tag" ]]; then # Check if $tag is not empty
+              echo "ghcr.io/${{ inputs.image_name }}:$tag"
+            fi
+          done)
+          echo "IMAGE_NAMES<<EOF" >> $GITHUB_ENV
+          echo "$IMAGE_NAMES" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Image list
+        run: |
+          echo "IMAGE_NAMES=${{ env.IMAGE_NAMES }}"
+
       - name: Build and push
         uses: docker/build-push-action@v6.15.0
         with:
@@ -40,4 +57,4 @@ jobs:
           file: ${{ inputs.dockerfile }}
           platforms: linux/amd64
           push: true
-          tags: ${{ inputs.tags }}
+          tags: "${{ env.IMAGE_NAMES }}"
