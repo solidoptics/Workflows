@@ -2,16 +2,28 @@ name: Semantic Releaser
 
 on:
   workflow_call:
+    # Map the workflow outputs to job outputs
+    outputs:
+      version:
+        description: "The released version tag"
+        value: ${{ jobs.SemanticRelease.outputs.new_release_version }}
+      notes:
+        description: "Release notes"
+        value: ${{ jobs.SemanticRelease.outputs.new_release_notes }}
 
 jobs:
 
   SemanticRelease:
     runs-on: ubuntu-latest
+    outputs:
+      new_release_version: ${{ steps.release.outputs.new_release_version }}
+      new_release_notes: ${{ steps.release.outputs.new_release_notes }}
     steps:
       - name: Git Checkout
         uses: actions/checkout@v4.2.2
 
       - name: Release
+        id: release
         uses: cycjimmy/semantic-release-action@v4.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
