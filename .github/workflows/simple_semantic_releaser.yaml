@@ -4,6 +4,9 @@ on:
   workflow_call:
     # Map the workflow outputs to job outputs
     outputs:
+      published:
+        description: "Whether a new release was created"
+        value: ${{ jobs.SemanticRelease.outputs.published }}
       version:
         description: "The released version tag"
         value: ${{ jobs.SemanticRelease.outputs.new_release_version }}
@@ -18,6 +21,7 @@ jobs:
     outputs:
       new_release_version: ${{ steps.release.outputs.new_release_version }}
       new_release_notes: ${{ steps.release.outputs.new_release_notes }}
+      published: ${{ steps.release.outputs.new_release_published }}
     steps:
       - name: Git Checkout
         uses: actions/checkout@v4.2.2
