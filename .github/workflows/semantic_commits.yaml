@@ -5,7 +5,11 @@ on:
 
 jobs:
   validate-commits:
-    runs-on: ubuntu-latest
+    runs-on: lite
+
+    container:
+      image: ghcr.io/catthehacker/ubuntu:runner-24.04-20260222
+
     steps:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v6.0.1
