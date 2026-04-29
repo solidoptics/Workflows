@@ -28,10 +28,10 @@ jobs:
       published: ${{ steps.release.outputs.new_release_published }}
     steps:
       - name: Git Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v6.0.2
 
       - name: Release
         id: release
-        uses: cycjimmy/semantic-release-action@v4.2.0
+        uses: cycjimmy/semantic-release-action@v6.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
