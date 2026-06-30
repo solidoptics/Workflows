@@ -29,7 +29,7 @@ on:
         description: "Path to download the changelog artifact, optional"
         required: false
         type: string
-        default: "${{ github.workspace }}/changelog.md"
+        default: "changelog.md"
     outputs:
       image-digest:
         description: "image digest"
