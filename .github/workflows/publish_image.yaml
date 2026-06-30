@@ -7,6 +7,11 @@ on:
         description: "Path to the Dockerfile"
         required: true
         type: string
+      build-context:
+        description: "Path to the build context, optional"
+        required: false
+        type: string
+        default: "."
       tags:
         description: "Line list of tags for the image"
         required: true
@@ -16,24 +21,15 @@ on:
         required: false
         type: string
         default: ${{ github.repository }}
-      changelog-run-id:
-        description: "Run ID of the workflow that produced the changelog artifact, optional"
-        required: false
-        type: string
-      changelog-artifact-id:
-        description: "Artifact ID of the changelog artifact, optional"
+      changelog:
+        description: "Changelog to put into a changelog.md file, optional"
         required: false
         type: string
       changelog-path:
         description: "Path to download the changelog artifact, optional"
         required: false
         type: string
-        default: ${{ github.workspace }}
-      build-context:
-        description: "Path to the build context, optional"
-        required: false
-        type: string
-        default: "."
+        default: "${{ github.workspace }}/changelog.md"
     outputs:
       image-digest:
         description: "image digest"
@@ -73,13 +69,9 @@ jobs:
           endpoint: tcp://buildkit:1234
           name: 'remote'
 
-      - name: Optionally download artifacts
-        if: ${{ inputs.changelog-run-id != '' && inputs.changelog-artifact-id != '' }}
-        uses: actions/download-artifact@v8.0.1
-        with:
-          run-id: ${{ inputs.changelog-run-id }}
-          artifact-ids: ${{ inputs.changelog-artifact-id }}
-          path: ${{ inputs.changelog-path }}
+      - name: Create changelog
+        run: |
+          echo "${{ inputs.changelog }}" >> "${{ inputs.changelog-path }}"
 
       - name: Create image name list
         run: |
@@ -100,7 +92,7 @@ jobs:
         id: build-and-push
         uses: docker/build-push-action@v7.2.0
         with:
-          context: ${{ intputs.build-context }}
+          context: ${{ inputs.build-context }}
           file: ${{ inputs.dockerfile }}
           platforms: linux/amd64
           push: true
