@@ -75,7 +75,7 @@ jobs:
 
       - name: Create image name list
         run: |
-          IMAGE_NAMES=$(echo "${{ inputs.tags }}" | sed 's|^|ghcr.io/:|')
+          IMAGE_NAMES=$(echo "${{ inputs.tags }}" | sed 's|^|ghcr.io/${{ inputs.image_name }}:|' | tr '[:upper:]' '[:lower:]')
           echo "IMAGE_NAMES<<EOF" >> $GITHUB_ENV
           echo "$IMAGE_NAMES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
