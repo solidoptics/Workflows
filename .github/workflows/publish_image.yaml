@@ -75,11 +75,7 @@ jobs:
 
       - name: Create image name list
         run: |
-          IMAGE_NAMES=$(echo "${{ inputs.tags }}" | while IFS= read -r tag; do
-            if [[ -n "$tag" ]]; then # Check if $tag is not empty
-              echo "ghcr.io/${{ inputs.image_name }}:$tag"
-            fi
-          done)
+          IMAGE_NAMES=$(echo "${{ inputs.tags }}" | sed 's|^|ghcr.io/:|')
           echo "IMAGE_NAMES<<EOF" >> $GITHUB_ENV
           echo "$IMAGE_NAMES" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
