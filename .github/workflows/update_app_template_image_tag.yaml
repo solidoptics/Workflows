@@ -1,0 +1,73 @@
+name: Update HelmRelease image tag
+
+on:
+  workflow_call:
+    secrets:
+      token:
+        description: "GitHub token with write access to the repository"
+        required: true
+    inputs:
+      new-tag:
+        description: "Path to the Dockerfile"
+        required: true
+        type: string
+      helmrelease-path:
+        description: "Path to the Helmrelease file, optional"
+        default: "kubernetes/helmrelease.yaml"
+        required: false
+        type: string
+      image:
+        description: "Image name to change the tag for, e.g. ghcr.io/owner/repo"
+        required: true
+        type: string
+      repository:
+        description: "Repository name to change the file in, e.g. owner/repo, optional"
+        required: false
+        type: string
+        default: ${{ github.repository }}
+      target-branch:
+        description: "Target branch for the pull request"
+        required: true
+        type: string
+      reviewers:
+        description: "Reviewers for the pull request"
+        required: true
+        type: string
+      pull-request-body:
+        description: "Pull request body, optional"
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  update-production:
+    runs-on: lite
+    container:
+      image: ghcr.io/catthehacker/ubuntu:runner-24.04-20260222
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          ref: ${{ inputs.target-branch }}
+          token: '${{ secrets.token }}'
+          path: 'repository'
+      - name: Change tag in helmrelease.yaml
+        env:
+          TAG: "${{ inputs.new-tag }}"
+          CONTAINER_REPO: "${{ inputs.image }}"
+          HELMRELEASE_PATH: "${{ inputs.helmrelease-path }}"
+        run: |
+          REPO_REGEX="$(printf '%s' "${CONTAINER_REPO}" | sed -e 's/[][\/.^$*+?(){}|]/\\&/g')"
+          sed -i -E "/repository:[[:space:]]*${REPO_REGEX}/{n;s|^([[:space:]]*tag: ).*$|\\1${TAG}|;}" repository/${HELMRELEASE_PATH}
+      - name: Create PR body
+        run: |
+          echo "${{ inputs.pull-request-body }}}" > pr_body.txt
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          path: 'repository'
+          commit-message: "ci: Update ${{ inputs.image }} to ${{ inputs.new-tag }}"
+          title: "ci: Update ${{ inputs.image }} to ${{ inputs.new-tag }}"
+          body-path: pr_body.txt
+          branch: "ci/${{ inputs.repository }}-update-${{ inputs.new-tag }}"
+          reviewers: "${{ inputs.reviewers }}"
