@@ -58,7 +58,7 @@ jobs:
       - name: Change tag in helmrelease.yaml
         env:
           TAG: "${{ inputs.new-tag }}@${{ inputs.new-hash }}"
-          CONTAINER_REPO: "${{ inputs.image }}"
+          CONTAINER_REPO: "ghcr.io/${{ inputs.image }}"
           HELMRELEASE_PATH: "${{ inputs.helmrelease-path }}"
         run: |
           REPO_REGEX="$(printf '%s' "${CONTAINER_REPO}" | sed -e 's/[][\/.^$*+?(){}|]/\\&/g')"
