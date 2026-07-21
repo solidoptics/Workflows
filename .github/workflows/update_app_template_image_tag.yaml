@@ -8,7 +8,11 @@ on:
         required: true
     inputs:
       new-tag:
-        description: "Path to the Dockerfile"
+        description: "New tag to update the image with"
+        required: true
+        type: string
+      new-hash:
+        description: "New hash to update the image tag with"
         required: true
         type: string
       helmrelease-path:
@@ -53,7 +57,7 @@ jobs:
           path: 'repository'
       - name: Change tag in helmrelease.yaml
         env:
-          TAG: "${{ inputs.new-tag }}"
+          TAG: "${{ inputs.new-tag }}@${{ inputs.new-hash }}"
           CONTAINER_REPO: "${{ inputs.image }}"
           HELMRELEASE_PATH: "${{ inputs.helmrelease-path }}"
         run: |
@@ -66,7 +70,7 @@ jobs:
         uses: peter-evans/create-pull-request@v8
         with:
           path: 'repository'
-          commit-message: "ci: Update ${{ inputs.image }} to ${{ inputs.new-tag }}"
+          commit-message: "ci: Update ${{ inputs.image }} to ${{ inputs.new-tag }}@${{ inputs.new-hash }}"
           title: "ci: Update ${{ inputs.image }} to ${{ inputs.new-tag }}"
           body-path: pr_body.txt
           branch: "ci/${{ inputs.repository }}-update-${{ inputs.new-tag }}"
