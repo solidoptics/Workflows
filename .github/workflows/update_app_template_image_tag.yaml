@@ -65,7 +65,7 @@ jobs:
           sed -i -E "/repository:[[:space:]]*${REPO_REGEX}/{n;s|^([[:space:]]*tag: ).*$|\\1${TAG}|;}" repository/${HELMRELEASE_PATH}
       - name: Create PR body
         run: |
-          echo "${{ inputs.pull-request-body }}}" > pr_body.txt
+          echo "${{ inputs.pull-request-body }}" > pr_body.txt
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v8
         with:
