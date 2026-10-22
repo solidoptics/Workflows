@@ -76,3 +76,4 @@ jobs:
           body-path: pr_body.txt
           branch: "ci/${{ inputs.image }}-update-${{ inputs.new-tag }}"
           reviewers: "${{ inputs.reviewers }}"
+          token: '${{ secrets.token }}'
