@@ -55,6 +55,7 @@ jobs:
           ref: ${{ inputs.target-branch }}
           token: '${{ secrets.token }}'
           path: 'repository'
+          repository: '${{ inputs.repository }}'
       - name: Change tag in helmrelease.yaml
         env:
           TAG: "${{ inputs.new-tag }}@${{ inputs.new-hash }}"
