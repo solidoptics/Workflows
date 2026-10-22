@@ -74,5 +74,5 @@ jobs:
           commit-message: "ci: Update ${{ inputs.image }} to ${{ inputs.new-tag }}@${{ inputs.new-hash }}"
           title: "ci: Update ${{ inputs.image }} to ${{ inputs.new-tag }}"
           body-path: pr_body.txt
-          branch: "ci/${{ inputs.repository }}-update-${{ inputs.new-tag }}"
+          branch: "ci/${{ inputs.image }}-update-${{ inputs.new-tag }}"
           reviewers: "${{ inputs.reviewers }}"
