@@ -64,6 +64,10 @@ jobs:
         run: |
           REPO_REGEX="$(printf '%s' "${CONTAINER_REPO}" | sed -e 's/[][\/.^$*+?(){}|]/\\&/g')"
           sed -i -E "/repository:[[:space:]]*${REPO_REGEX}/{n;s|^([[:space:]]*tag: ).*$|\\1${TAG}|;}" repository/${HELMRELEASE_PATH}
+      - name: debugging
+        if:  runner.debug == '1'
+        run: |
+            cat repository/${{ inputs.helmrelease-path }}
       - name: Create PR body
         run: |
           echo "${{ inputs.pull-request-body }}" > pr_body.txt
