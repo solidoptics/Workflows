@@ -62,7 +62,8 @@ jobs:
           CONTAINER_REPO: "ghcr.io/${{ inputs.image }}"
           HELMRELEASE_PATH: "${{ inputs.helmrelease-path }}"
         run: |
-          REPO_REGEX="$(printf '%s' "${CONTAINER_REPO}" | sed -e 's/[][\/.^$*+?(){}|]/\\&/g')"
+          CONTAINER_NAME="$(echo "${CONTAINER_REPO}" | tr '[:upper:]' '[:lower:]')"
+          REPO_REGEX="$(printf '%s' "${CONTAINER_NAME}" | sed -e 's/[][\/.^$*+?(){}|]/\\&/g')"
           sed -i -E "/repository:[[:space:]]*${REPO_REGEX}/{n;s|^([[:space:]]*tag: ).*$|\\1${TAG}|;}" repository/${HELMRELEASE_PATH}
       - name: debugging
         if:  runner.debug == '1'
