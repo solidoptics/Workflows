@@ -30,6 +30,11 @@ on:
         required: false
         type: string
         default: "changelog.md"
+      version-path:
+        description: "Path to create version.json, optional"
+        required: false
+        type: string
+        default: "version.json"
     outputs:
       image-digest:
         description: "image digest"
@@ -72,6 +77,12 @@ jobs:
       - name: Create changelog
         run: |
           echo "${{ inputs.changelog }}" >> "${{ inputs.changelog-path }}"
+
+      - name: Create and embed build info JSON
+        run: |
+          TIMESTAMP=$(TZ=Europe/Amsterdam date --iso-8601=seconds)
+          echo "{\"version\": \"${{ inputs.tags }}\", \"timestamp\": \"${TIMESTAMP}\", \"commit\": \"${{ github.sha }}\"}" > ${{ inputs.version-path }}
+          cat ${{ inputs.version-path }}
 
       - name: Create image name list
         run: |
